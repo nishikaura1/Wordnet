@@ -1,0 +1,89 @@
+package ngordnet.main;
+
+import edu.princeton.cs.algs4.In;
+
+import java.util.*;
+
+public class Graph {
+
+    private HashMap<Integer, ArrayList<String>> idToWords = new HashMap<Integer,ArrayList<String>>();
+    private HashMap<String, Integer> wordIdMap = new HashMap<>();
+    private HashMap<Integer, ArrayList<Integer>> adjacencyList = new HashMap<Integer, ArrayList<Integer>>();
+    private HashMap<String, ArrayList<Integer>> words = new HashMap<String, ArrayList<Integer>>();
+    private int size;
+    public int size() {
+        return size;
+    }
+    public Graph(String synsetFile, String hyponymFile) {
+        String line;
+        String[] arrayLine;
+        In readName = new In(hyponymFile);
+        int index;
+        int value;
+        while (!(readName.isEmpty())) {
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+            line = readName.readLine();
+            arrayLine = line.split(",");
+
+            index = Integer.parseInt(arrayLine[0]);
+            size += 1;
+            int i =1;
+            while (i<arrayLine.length) {
+                //System.out.println(arrayLine[i]);
+                value = Integer.parseInt(arrayLine[i]);
+                ids.add(value);
+                i++;
+            }
+            adjacencyList.put(index, ids);
+
+        }
+        In readName1 = new In(synsetFile);
+        String line1;
+        String[] arrayLine1;
+
+        while (!(readName1.isEmpty())) {
+            line1 = readName1.readLine();
+            arrayLine1 = line1.split(",");
+            int index1 = Integer.parseInt(arrayLine1[0]);
+            ArrayList<String> strings = new ArrayList<String>();
+            for (String w: arrayLine1[1].split(" ")) {
+                if (!words.containsKey(w)) {
+                    words.put(w, new ArrayList<>());
+                    //wordIdMap.put(w, index1);
+                }
+                words.get(w).add(index1);
+                //wordIdMap.put(w, index1);
+                size++;
+                strings.add(w);
+            }
+            //strings.add(arrayLine1[1]);
+            idToWords.put(index1, strings);
+            //wordIdMap.put(arrayLine1[1], index1);
+        }
+    }
+    public List<Integer> neighbors(int id) {
+        return adjacencyList.get(id);
+    }
+    public HashMap<Integer, ArrayList<Integer>> getAdj() {
+        return adjacencyList;
+    }
+    public HashMap<String, ArrayList<Integer>> getWords() {
+        return words;
+    }
+    public TreeSet getHyponym(String word) {
+        System.out.println("Graph: I am getting the hyponym for " + word);
+        ArrayList<Integer> myIds = words.get(word);
+        TreeSet<String> finalHyponyms = new TreeSet<>();
+        Traversal t = new Traversal(this, myIds);
+        if (t.ans!=null) {
+            finalHyponyms.addAll(t.ans);
+        }
+        return finalHyponyms;
+    }
+    public HashMap<Integer, ArrayList<String>> getIdToWords() {
+        return idToWords;
+    }
+    public HashMap<String, Integer> getWordIdMap() {
+        return wordIdMap;
+    }
+}
