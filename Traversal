@@ -1,0 +1,36 @@
+package ngordnet.main;
+import edu.princeton.cs.algs4.In;
+import org.antlr.v4.runtime.tree.Tree;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.TreeSet;
+public class Traversal {
+    HashSet<String> set;
+    private boolean marked[];
+    public HashSet<String> ans = new HashSet<>();
+    long startTime = System.currentTimeMillis();
+    static long prevTime = System.currentTimeMillis();
+    public Traversal(Graph G, ArrayList<Integer> idList) {//, int id) {
+        marked = new boolean[G.size()];
+        set = new HashSet<>();
+        if (! (idList == null)) {
+            for (int id : idList) {
+                ans.addAll(dfs(G, id));
+            }
+        }
+    }
+    public HashSet<String> dfs(Graph G, int id) {
+        marked[id] = true;
+        for (String word : G.getIdToWords().get(id)) {
+            set.add(word);
+        }
+        if (G.neighbors(id) != null) {
+            for (Integer id1 : G.neighbors(id)) { // for each child of the current node with given id, add to the set
+                if (marked[id1] == false) {
+                    dfs(G, id1); // recursively call on each of the children
+                }
+            }
+        }
+        return set;
+    }
+}
